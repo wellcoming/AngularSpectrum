@@ -9,11 +9,11 @@ from .utils import wl2rgb
 
 class SpatialSlice:
     def __init__(
-        self,
-        spectrum: ArrayLike,
-        delta: ArrayLike,
-        z: float = 0,
-        wavelength: float = 550e-9,
+            self,
+            spectrum: ArrayLike,
+            delta: ArrayLike,
+            z: float = 0,
+            wavelength: float = 550e-9,
     ):
         self.spectrum = np.asarray(spectrum)
         self.delta = np.asarray(delta)
@@ -45,7 +45,7 @@ class SpatialSlice:
 
     def propagate(self, dz):
         k = 1 / self.wavelength
-        kz = 2 * np.pi * np.sqrt(k**2 - self.u**2 - self.v**2 + 0j)
+        kz = 2 * np.pi * np.sqrt(k ** 2 - self.u ** 2 - self.v ** 2 + 0j)
         self.spectrum *= np.exp(1j * kz * dz)
         self.z += dz
 
@@ -54,7 +54,7 @@ class SpatialSlice:
         trans(field)
         self.spectrum = np.fft.fft2(np.fft.ifftshift(field))
 
-    def draw(self, field=True, log_scale=False, show_color=False, data=None):
+    def draw(self, field=True, phase=False, log_scale=False, show_color=False, data=None):
         """
         field: bool - True为光场（空间域），False为频谱
         log_scale: bool - 是否对幅值取log10
@@ -67,14 +67,19 @@ class SpatialSlice:
         else:
             data = np.fft.fftshift(self.spectrum)
 
-        data = np.abs(data).get()
-
         if show_color:
             cmap = LinearSegmentedColormap.from_list(
                 "monochrome", ["black", wl2rgb(self.wavelength)]
             )
         else:
             cmap = "viridis"
+
+        if phase:
+            data = np.angle(data).get()
+            cmap = "twilight_shifted"
+        else:
+            data = np.abs(data).get()
+
         physical_shape = self.physical_shape.get()
         im = plt.imshow(
             data,

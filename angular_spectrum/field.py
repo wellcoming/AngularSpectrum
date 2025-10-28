@@ -44,8 +44,11 @@ def create_spherical_wave(
     k = 2 * np.pi / wavelength
     phase = np.exp(1j * k * r)
 
-    gaussian_aperture = np.exp(-np.sum((coords / shape / waist_ratio) ** 2, axis=0))
-    wave_to_add = gaussian_aperture * phase / r
+    wave_to_add = phase / r
+    if waist_ratio:
+        gaussian_aperture = np.exp(-np.sum((coords / shape / waist_ratio) ** 2, axis=0))
+        wave_to_add*= gaussian_aperture
+
     wave_to_add /= np.max(np.abs(wave_to_add))
     field += wave_to_add
 
