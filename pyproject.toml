@@ -1,0 +1,25 @@
+[project]
+name = "angular-spectrum"
+version = "1.0.0"
+description = "Angular Spectrum Method for Optical Propagation"
+readme = "README.md"
+requires-python = ">=3.13"
+license = { text = "GPL-3.0-only" }
+authors = [{ name = "Your Name", email = "you@example.com" }]
+
+
+dependencies = [
+    "colour-science>=0.4.6",
+    "cupy-cuda13x>=13.6.0",
+    "matplotlib>=3.10.7",
+]
+
+[build-system]
+requires = ["hatchling>=1.21.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+exclude = [".idea", "__pycache__", "output"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["angular_spectrum"]

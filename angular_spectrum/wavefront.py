@@ -1,18 +1,19 @@
+from typing import Callable
 import cupy as np
 import matplotlib.pyplot as plt
 from cupy.typing import ArrayLike
 from matplotlib.colors import LinearSegmentedColormap
 
-from utils import wl2rgb
+from .utils import wl2rgb
 
 
 class SpatialSlice:
     def __init__(
-            self,
-            spectrum: ArrayLike,
-            delta: ArrayLike,
-            z: float = 0,
-            wavelength: float = 550e-9,
+        self,
+        spectrum: ArrayLike,
+        delta: ArrayLike,
+        z: float = 0,
+        wavelength: float = 550e-9,
     ):
         self.spectrum = np.asarray(spectrum)
         self.delta = np.asarray(delta)
@@ -44,9 +45,14 @@ class SpatialSlice:
 
     def propagate(self, dz):
         k = 1 / self.wavelength
-        kz = 2 * np.pi * np.sqrt(k ** 2 - self.u ** 2 - self.v ** 2 + 0j)
+        kz = 2 * np.pi * np.sqrt(k**2 - self.u**2 - self.v**2 + 0j)
         self.spectrum *= np.exp(1j * kz * dz)
         self.z += dz
+
+    def apply_transform(self, trans: Callable[[ArrayLike], None]):
+        field = np.fft.fftshift(np.fft.ifft2(self.spectrum))
+        trans(field)
+        self.spectrum = np.fft.fft2(np.fft.ifftshift(field))
 
     def draw(self, field=True, log_scale=False, show_color=False, data=None):
         """
