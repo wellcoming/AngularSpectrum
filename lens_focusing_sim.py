@@ -17,22 +17,22 @@ def lens_focusing_sim():
     hole_r = 2.5e-3
     d = 0.25
     physical_shape = np.array((d * 2 * lens_r, d * 2 * lens_r))
-    shape = np.array((2048, 2048))
+    shape = np.array((2048,2048))
     delta = physical_shape / shape
 
     wave_length = 550e-9
     focal_length = 50e-2
     L1 = 100e-2
-    L2 = 100e-2 + 200e-3
+    L2 = 100e-2
 
     color = True
     phase = False
 
     field = np.zeros(shape.tolist(), dtype=complex)
-    create_spherical_wave(field, wave_length, delta, L1, waist_ratio=0)
+    create_spherical_wave(field, wave_length, delta, L1, waist_ratio=1 / 4)
     create_lens(field, wave_length, focal_length, delta),
-    create_circle(field, physical_shape / 2, hole_r, 0, delta),
-    create_circle(field, physical_shape / 2, lens_r * d, 0, delta, reverse=True),
+    create_circle(field, physical_shape / 2, hole_r, 0, delta)
+    # create_circle(field, physical_shape / 2, lens_r * d, 0, delta, reverse=True)
 
     plane = SpatialSlice.from_field(field, delta, 0, wave_length)
     plt.figure(figsize=figure_shape(shape, 2))
